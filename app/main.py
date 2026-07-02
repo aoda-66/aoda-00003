@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api import (
     auth_router, collection_router, disease_router,
-    restoration_router, patrol_router, image_router, transfer_router
+    restoration_router, patrol_router, image_router, transfer_router, borrow_router
 )
 from app.api.export import router as export_router
 from app.api.scan import router as scan_router
@@ -28,6 +28,7 @@ app.include_router(restoration_router, prefix=settings.API_V1_STR)
 app.include_router(patrol_router, prefix=settings.API_V1_STR)
 app.include_router(image_router, prefix=settings.API_V1_STR)
 app.include_router(transfer_router, prefix=settings.API_V1_STR)
+app.include_router(borrow_router, prefix=settings.API_V1_STR)
 app.include_router(export_router, prefix=settings.API_V1_STR)
 app.include_router(scan_router, prefix=settings.API_V1_STR)
 

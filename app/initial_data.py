@@ -32,6 +32,13 @@ PERMISSIONS = [
     {"name": "流转查看", "code": "transfer_view"},
     {"name": "流转编辑", "code": "transfer_edit"},
     {"name": "流转删除", "code": "transfer_delete"},
+    {"name": "借阅创建", "code": "borrow_create"},
+    {"name": "借阅查看", "code": "borrow_view"},
+    {"name": "借阅编辑", "code": "borrow_edit"},
+    {"name": "借阅删除", "code": "borrow_delete"},
+    {"name": "借阅审批", "code": "borrow_approve"},
+    {"name": "借阅确认", "code": "borrow_confirm"},
+    {"name": "借阅归还", "code": "borrow_return"},
     {"name": "数据导出", "code": "data_export"},
     {"name": "扫描控制", "code": "scan_control"},
     {"name": "扫描执行", "code": "scan_perform"},
@@ -51,7 +58,8 @@ ROLES = [
             "collection_create", "collection_view", "collection_edit", "collection_delete",
             "disease_create", "disease_view", "disease_edit",
             "image_upload", "image_view", "image_edit",
-            "data_export"
+            "data_export",
+            "borrow_view", "borrow_approve", "borrow_confirm", "borrow_return"
         ]
     },
     {
@@ -73,7 +81,7 @@ ROLES = [
     {
         "name": "普通用户",
         "description": "普通用户，仅可查看公开藏品",
-        "permissions": ["collection_view"]
+        "permissions": ["collection_view", "borrow_create", "borrow_view"]
     }
 ]
 

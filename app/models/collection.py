@@ -28,3 +28,4 @@ class Collection(Base):
     patrols = relationship("Patrol", back_populates="collection", cascade="all, delete-orphan")
     images = relationship("Image", back_populates="collection", cascade="all, delete-orphan")
     transfers = relationship("Transfer", back_populates="collection", cascade="all, delete-orphan")
+    borrows = relationship("Borrow", back_populates="collection", cascade="all, delete-orphan")

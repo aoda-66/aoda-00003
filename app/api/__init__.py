@@ -5,6 +5,7 @@ from app.api.restoration import router as restoration_router
 from app.api.patrol import router as patrol_router
 from app.api.image import router as image_router
 from app.api.transfer import router as transfer_router
+from app.api.borrow import router as borrow_router
 
 __all__ = [
     "auth_router",
@@ -13,5 +14,6 @@ __all__ = [
     "restoration_router",
     "patrol_router",
     "image_router",
-    "transfer_router"
+    "transfer_router",
+    "borrow_router"
 ]

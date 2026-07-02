@@ -6,7 +6,7 @@ from app.crud.collection import (
     get_collection, get_collections, create_collection, update_collection, delete_collection
 )
 from app.crud.user import get_user
-from app.security.auth import get_current_user, check_permission
+from app.security.auth import check_permission
 from app.schemas.collection import CollectionCreate, CollectionUpdate, CollectionResponse
 from app.models.user import User
 
@@ -22,7 +22,7 @@ async def read_collections(
     location: Optional[str] = Query(None),
     is_public: Optional[bool] = Query(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("collection_view"))
 ):
     collections = get_collections(
         db, skip=skip, limit=limit, search_keyword=search_keyword,
@@ -55,7 +55,7 @@ async def read_collections(
 async def read_collection(
     collection_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("collection_view"))
 ):
     collection = get_collection(db, collection_id=collection_id)
     if collection is None:

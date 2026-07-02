@@ -6,7 +6,7 @@ from app.crud.restoration import (
     get_restoration, get_restorations, get_restorations_by_collection, create_restoration, update_restoration, delete_restoration
 )
 from app.crud.user import get_user
-from app.security.auth import get_current_user, check_permission
+from app.security.auth import check_permission
 from app.schemas.restoration import RestorationCreate, RestorationUpdate, RestorationResponse
 from app.models.user import User
 
@@ -19,7 +19,7 @@ async def read_restorations(
     status: Optional[str] = Query(None),
     is_completed: Optional[bool] = Query(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("restoration_view"))
 ):
     restorations = get_restorations(db, skip=skip, limit=limit, status=status, is_completed=is_completed)
     return [
@@ -48,7 +48,7 @@ async def read_restorations(
 async def read_restorations_by_collection(
     collection_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("restoration_view"))
 ):
     restorations = get_restorations_by_collection(db, collection_id=collection_id)
     return [
@@ -77,7 +77,7 @@ async def read_restorations_by_collection(
 async def read_restoration(
     restoration_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("restoration_view"))
 ):
     restoration = get_restoration(db, restoration_id=restoration_id)
     if restoration is None:

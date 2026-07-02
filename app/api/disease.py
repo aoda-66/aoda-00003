@@ -6,7 +6,7 @@ from app.crud.disease import (
     get_disease, get_diseases, get_diseases_by_collection, create_disease, update_disease, delete_disease
 )
 from app.crud.user import get_user
-from app.security.auth import get_current_user, check_permission
+from app.security.auth import check_permission
 from app.schemas.disease import DiseaseCreate, DiseaseUpdate, DiseaseResponse
 from app.models.user import User
 
@@ -19,7 +19,7 @@ async def read_diseases(
     disease_type: Optional[str] = Query(None),
     severity: Optional[str] = Query(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("disease_view"))
 ):
     diseases = get_diseases(db, skip=skip, limit=limit, disease_type=disease_type, severity=severity)
     return [
@@ -43,7 +43,7 @@ async def read_diseases(
 async def read_diseases_by_collection(
     collection_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("disease_view"))
 ):
     diseases = get_diseases_by_collection(db, collection_id=collection_id)
     return [
@@ -67,7 +67,7 @@ async def read_diseases_by_collection(
 async def read_disease(
     disease_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("disease_view"))
 ):
     disease = get_disease(db, disease_id=disease_id)
     if disease is None:

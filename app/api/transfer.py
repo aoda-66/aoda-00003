@@ -6,7 +6,7 @@ from app.crud.transfer import (
     get_transfer, get_transfers, get_transfers_by_collection, create_transfer, update_transfer, delete_transfer
 )
 from app.crud.user import get_user
-from app.security.auth import get_current_user, check_permission
+from app.security.auth import check_permission
 from app.schemas.transfer import TransferCreate, TransferUpdate, TransferResponse
 from app.models.user import User
 
@@ -19,7 +19,7 @@ async def read_transfers(
     transfer_type: Optional[str] = Query(None),
     status: Optional[str] = Query(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("transfer_view"))
 ):
     transfers = get_transfers(db, skip=skip, limit=limit, transfer_type=transfer_type, status=status)
     return [
@@ -45,7 +45,7 @@ async def read_transfers(
 async def read_transfers_by_collection(
     collection_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("transfer_view"))
 ):
     transfers = get_transfers_by_collection(db, collection_id=collection_id)
     return [
@@ -71,7 +71,7 @@ async def read_transfers_by_collection(
 async def read_transfer(
     transfer_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("transfer_view"))
 ):
     transfer = get_transfer(db, transfer_id=transfer_id)
     if transfer is None:

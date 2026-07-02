@@ -6,7 +6,7 @@ from app.crud.patrol import (
     get_patrol, get_patrols, get_patrols_by_collection, create_patrol, update_patrol, delete_patrol
 )
 from app.crud.user import get_user
-from app.security.auth import get_current_user, check_permission
+from app.security.auth import check_permission
 from app.schemas.patrol import PatrolCreate, PatrolUpdate, PatrolResponse
 from app.models.user import User
 
@@ -19,7 +19,7 @@ async def read_patrols(
     status: Optional[str] = Query(None),
     is_normal: Optional[bool] = Query(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("patrol_view"))
 ):
     patrols = get_patrols(db, skip=skip, limit=limit, status=status, is_normal=is_normal)
     return [
@@ -44,7 +44,7 @@ async def read_patrols(
 async def read_patrols_by_collection(
     collection_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("patrol_view"))
 ):
     patrols = get_patrols_by_collection(db, collection_id=collection_id)
     return [
@@ -69,7 +69,7 @@ async def read_patrols_by_collection(
 async def read_patrol(
     patrol_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("patrol_view"))
 ):
     patrol = get_patrol(db, patrol_id=patrol_id)
     if patrol is None:

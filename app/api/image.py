@@ -9,7 +9,7 @@ from app.crud.image import (
     get_image, get_images, get_images_by_collection, create_image, update_image, delete_image
 )
 from app.crud.user import get_user
-from app.security.auth import get_current_user, check_permission
+from app.security.auth import check_permission
 from app.schemas.image import ImageCreate, ImageUpdate, ImageResponse
 from app.models.user import User
 
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/images", tags=["影像管理"])
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "bmp", "tiff", "obj", "ply", "stl"}
 
-async def save_uploaded_file(file: UploadFile, collection_id: int) -> str:
+async def save_uploaded_file(file: UploadFile, collection_id: int) -> tuple:
     file_ext = file.filename.split(".")[-1].lower() if "." in file.filename else ""
     if file_ext not in ALLOWED_EXTENSIONS:
         raise HTTPException(status_code=400, detail="不支持的文件格式")
@@ -30,16 +30,17 @@ async def save_uploaded_file(file: UploadFile, collection_id: int) -> str:
     
     async with aiofiles.open(file_path, "wb") as out_file:
         content = await file.read()
+        file_size = len(content)
         await out_file.write(content)
     
-    return str(file_path)
+    return str(file_path), file_size
 
 @router.get("/", response_model=list[ImageResponse])
 async def read_images(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("image_view"))
 ):
     images = get_images(db, skip=skip, limit=limit)
     return [
@@ -63,7 +64,7 @@ async def read_images(
 async def read_images_by_collection(
     collection_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("image_view"))
 ):
     images = get_images_by_collection(db, collection_id=collection_id)
     return [
@@ -87,7 +88,7 @@ async def read_images_by_collection(
 async def read_image(
     image_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_permission("image_view"))
 ):
     image = get_image(db, image_id=image_id)
     if image is None:
@@ -114,8 +115,7 @@ async def upload_image(
     db: Session = Depends(get_db),
     current_user: User = Depends(check_permission("image_upload"))
 ):
-    file_path = await save_uploaded_file(file, collection_id)
-    file_size = len(await file.read())
+    file_path, file_size = await save_uploaded_file(file, collection_id)
     
     image_create = ImageCreate(
         collection_id=collection_id,

@@ -79,16 +79,21 @@ class ScannerFactory:
     _adapters = {
         "mock": MockScannerAdapter
     }
+    _instances = {}
     
     @classmethod
     def get_adapter(cls, adapter_type: str = "mock") -> ScannerAdapter:
-        adapter_class = cls._adapters.get(adapter_type)
-        if adapter_class is None:
-            raise ValueError(f"不支持的扫描设备类型: {adapter_type}")
-        return adapter_class()
+        if adapter_type not in cls._instances:
+            adapter_class = cls._adapters.get(adapter_type)
+            if adapter_class is None:
+                raise ValueError(f"不支持的扫描设备类型: {adapter_type}")
+            cls._instances[adapter_type] = adapter_class()
+        return cls._instances[adapter_type]
     
     @classmethod
     def register_adapter(cls, adapter_type: str, adapter_class: type):
         if not issubclass(adapter_class, ScannerAdapter):
             raise ValueError("适配器必须继承 ScannerAdapter")
         cls._adapters[adapter_type] = adapter_class
+        if adapter_type in cls._instances:
+            del cls._instances[adapter_type]
